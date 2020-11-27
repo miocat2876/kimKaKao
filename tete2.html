@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- 상, 하, 좌, 우, 스페이스바 키 입력 처리
+
+한 줄 삭제 기능
+
+다음 블럭 출력 기능
+
+스피드 레벨 및 삭제 줄 수 출력 기능 -->
+
+<style>
+
+	.white{
+	
+		background-color: white;
+		
+	}
+
+</style>
+
+<script>
+
+var state = {
+		
+		width : 10,
+		height : 20,
+		block :[{x:0,y:0},{x:1,y:0},{x:2,y:0},{x:3,y:0}],
+		blockState : 0
+		
+}
+
+var x = 20;
+var y = 20;
+
+$(document).ready(function(){ 
+	
+	$(document).keydown(function(event) {
+		  if (event.keyCode == '37') {
+			  
+			  sunsu({x:-1,y:0});
+			  
+			  console.log('좌측 화살키를 누르셨습니다.');
+		  }
+		  else if (event.keyCode == '39') {
+			  
+		    console.log('우측 화살키를 누르셨습니다.');
+			  
+		    sunsu({x:1,y:0});
+			  
+		  }
+		  else if (event.keyCode == '38') {
+			  
+			  console.log('상단 화살키를 누르셨습니다.');  
+		  }
+		  else if (event.keyCode == '40') {
+			  
+			  sunsu({x:0,y:1});
+			  
+			  console.log('하단 화살키를 누르셨습니다.');  
+		   }
+		});
+	
+	//일자 하나 구현
+	setInterval(function() {
+	  console.log('Works!');
+	  
+	  console.log(state.block[0].y);
+	  sunsu({x:0,y:1});
+	  
+	}, 500);
+		
+	//아래로 눌렀 을대 초기화 할것.
+
+	seting(state.width,state.height);
+
+	
+	
+	//랜덤 모양
+	//매초마다 한칸씩 아래로
+	//
+	
+	/* drow({i:0,j:0},"red"); */
+	
+	
+	
+});
+
+var aa = [];
+
+
+function seting(width,height){
+	
+	
+	var table = $('table');
+	var tr;
+	
+	for(y=0;y<height;y++){
+		
+		table.append('<tr></tr>');
+		
+		for(x=0;x<width;x++){
+			
+			$('table tr').last().append('<td class = "white"></td>');
+			
+			aa.push({x,y});
+			
+		}
+	}
+	
+	console.log(aa);
+}
+
+let sw = 0;
+function sunsu(obj,color){
+	
+	sw = filter(obj);
+	switch (sw){
+	    case 1 :return;
+	    case 2 : createBlock();return;
+	    default :sw = 0;
+	}
+	
+	draw(obj,color);
+
+}
+
+function createBlock(){
+	
+	console.log('블럭생성');
+	state.blockState = state.blockState + 1;
+	switch (state.blockState){
+	    case 0 : state.block = [{x:0,y:0},{x:1,y:0},{x:2,y:0},{x:3,y:0}]; break;//일자
+	    case 1 : state.block = [{x:0,y:1},{x:1,y:1},{x:0,y:0},{x:1,y:0}]; break;//네모
+	    case 2 : state.block = [{x:1,y:1},{x:2,y:1},{x:0,y:0},{x:1,y:0}]; break;//앞으로 뾰족
+	    case 3 : state.block = [{x:0,y:1},{x:1,y:1},{x:1,y:0},{x:2,y:0}]; break;//뒤로 뾰족
+	    case 4 : state.block = [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:1,y:0}]; break;//ㅗ
+	    case 5 : state.block = [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:2,y:0}]; break;//앞으로니은
+	    case 6 : state.block = [{x:0,y:1},{x:1,y:1},{x:2,y:1},{x:0,y:0}]; break;//뒤로 니은
+	    default :state.block = [{x:0,y:0},{x:1,y:0},{x:2,y:0},{x:3,y:0}]; state.blockState= 0;break;//일자
+	}
+}
+
+
+function draw(obj,color){
+	
+	if(color == null || color == 'undefined')
+		color ='red';
+	
+	if(obj.x<=0){
+		for(let i= 0;i<state.block.length;i++){
+	
+		    state.block[i].x = state.block[i].x + obj.x;
+		    state.block[i].y = state.block[i].y + obj.y;
+		     
+		    	$( 'tr' ).eq(state.block[i].y+(-1*obj.y)).children().eq(state.block[i].x+(-1*obj.x)).css("background-color", 'white');
+		    
+				$( 'tr' ).eq(state.block[i].y).children().eq(state.block[i].x).css("background-color", color);
+				
+		}
+		
+	}else{
+		
+		for(let i=state.block.length-1;i=>0;i--){
+			
+			if(i<0)
+				return;
+
+		    state.block[i].x = state.block[i].x + obj.x;
+		    state.block[i].y = state.block[i].y + obj.y;
+		     
+		    	$( 'tr' ).eq(state.block[i].y+(-1*obj.y)).children().eq(state.block[i].x+(-1*obj.x)).css("background-color", 'white');
+		    
+				$( 'tr' ).eq(state.block[i].y).children().eq(state.block[i].x).css("background-color", color);
+			
+		
+		}
+		
+		
+	}
+	
+	
+	
+	
+}
+
+function filter(obj){
+	
+	let checkX = 0; 
+	let checkY = 0; 
+	
+	
+	for(let i= 0;i<state.block.length;i++){
+		checkX = state.block[i].x + obj.x;
+		checkY = state.block[i].y + obj.y;
+		
+		/* if($( 'tr' ).eq(state.block[i].y).children().eq(state.block[i].x+1).css("background-color")!="rgb(255, 255, 255)")
+			return 1; */
+		
+		if(checkY<0||checkY>=state.height)
+			return 2;	
+		
+	    if(checkX<0||checkX>=state.width)
+	    	return 1;
+	    
+	    let check = 0;
+	    for(let j =0;j<state.block.length;j++){ 
+	    	
+			if(state.block[i].y+1==state.block[j].y)
+				check = 1; 
+	
+	    }
+	    
+	    if($( 'tr' ).eq(state.block[i].y+1).children().eq(state.block[i].x).css("background-color")!="rgb(255, 255, 255)" && check !=1)
+	    	return 2;	
+	}
+	return 0;
+	
+	
+}
+
+</script>
+
+<style>
+
+		.view{
+			margin-left : 30%;
+			width: 600px;
+			height: 800px;	
+			border: silver 1px solid;
+		}
+		table{
+			width: 100%;
+			height: 100%;
+		}
+		td{
+			border: 1px solid black;
+		}
+
+
+</style>
+
+
+</head>
+<body>
+
+
+<div class = "view">
+	
+	<table>
+	
+	
+	
+	</table>
+
+</div>
+
+
+
+</body>
+</html>
